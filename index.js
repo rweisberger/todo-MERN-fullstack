@@ -16,14 +16,14 @@ let data={ users: [[{name:'Rachel', email:'rachel@gmail.com', password:'secret'}
                  [{name:'Bill', email:'bill@gmail.com', password:'password'}]]
          };
             
-app.post('/', async (req, res) => {
-    try{ 
-        console.log('POST request')
-        res.status(200).send('POST request')
-    } catch(err){
-        res.send(err)
-    }
-})
+// app.post('/', async (req, res) => {
+//     try{ 
+//         console.log('POST request')
+//         res.status(200).send('POST request')
+//     } catch(err){
+//         res.send(err)
+//     }
+// })
 
 // create account
 app.post('/account/newUser/:name/:email/:password', async (req, res) => {
