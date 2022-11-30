@@ -32,12 +32,10 @@ main()
 //   .then(console.log)
 //   .catch(console.error);
 
-
 let data={ users: [[{name:'Rachel', email:'rachel@gmail.com', password:'secret'}],
                  [{name:'Bill', email:'bill@gmail.com', password:'password'}]]
          };
             
-
 // create account
 app.post('/account/newUser', async (req, res) => {
     const collection = db.collection('users');
@@ -45,7 +43,7 @@ app.post('/account/newUser', async (req, res) => {
     console.log('reqBOD:', req.body);
         try{
             const users = await collection.find({ email: email })
-            .toArray() 
+                                          .toArray() 
             console.log('users', users);
             if (users.length > 0) {
                 res.status(409).send('User already exists')
@@ -58,14 +56,23 @@ app.post('/account/newUser', async (req, res) => {
         };        
 });
 
-app.get('/login/:email/:password', async (req, res) => {
+// Bill says this also should be a post request because we are sending info and its better to use a header
+app.post('/login', async (req, res) => {
     // read username and password from request body
-    console.log(req.params.email, req.params.password);
+    // destructuring to access email and password
+    const collection = db.collection('users');
+    const { email, password } = req.body
+    console.log(email, password);
     try{
-        let [user] = data.users.find(item=> item.find(item => item.email === req.params.email))
-        if (user.password === req.params.password) {
-             console.log(user.password)
-             res.send(`finding user: ${user.name}`);
+        // I think searching for a completed match with user and password is fine- 
+        // we don't want to send a message that says that the user exists, but the 
+        // password doesn't match for security reasons
+        let users = await collection.find({ email: email, password: password })
+                                    .toArray() 
+        if (users.length > 0) {
+             console.log(users)
+             const [{ name }] = users;
+             res.send(`Found user: ${name}`);
             } else {
              res.status(404).send("Not found");
         };
@@ -76,7 +83,9 @@ app.get('/login/:email/:password', async (req, res) => {
 
 // create list
 // each list should have an id, name and users
-app.post('/create/list/:email/:listName', async (req, res) =>{
+app.post('/create/list', async (req, res) =>{
+    const collection = db.collection('users');
+    const { email, listName } = req.body
     try{
         console.log(req.params);    
         res.status(200).send("create new list");
