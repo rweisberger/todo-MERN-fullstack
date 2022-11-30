@@ -5,49 +5,57 @@ const bodyParser= require('body-parser');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
+const MongoClient = require('mongodb').MongoClient;
+
 
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 const port = process.env.PORT || 4000;
+
+const url =
+'mongodb+srv://DBMainUser:hPu7sp3hGSCxkjEP@cluster0.pprbo47.mongodb.net/?retryWrites=true&w=majority';
+const client = new MongoClient(url);
+const dbName = "todo_project";
+let db;
+let collection;
+async function main() {
+  // Use connect method to connect to the server
+  await client.connect();
+  console.log("Connected successfully to server");
+  db = client.db(dbName);
+  collection = db.collection("users");
+}
+
+main()
+//   .then(console.log)
+//   .catch(console.error);
 
 
 let data={ users: [[{name:'Rachel', email:'rachel@gmail.com', password:'secret'}],
                  [{name:'Bill', email:'bill@gmail.com', password:'password'}]]
          };
             
-// app.post('/', async (req, res) => {
-//     try{ 
-//         console.log('POST request')
-//         res.status(200).send('POST request')
-//     } catch(err){
-//         res.send(err)
-//     }
-// })
 
 // create account
-app.post('/account/newUser/:name/:email/:password', async (req, res) => {
-    try {
-        data.users.push([{name:req.params.name, email: req.params.email, password:req.params.password}]);
-        res.status(200).send('creating account');
-        console.log(JSON.stringify(data));
-    } catch (err) {
-        res.send(err);
-    }
-    // console.log('successfully created account with data: ', req.body);
-    // database.createAccount(req.body);
-    // res.send('Account created!');
-    // try {
-    //     console.log('successfully created account with data: ', req.body);
-    //     database.createAccount(req.body);
-    //     throw Error('whoops');
-    //     res.send('Account created!');
-    // } catch (err) {
-    //     console.error('Error creating account: ', req.body);
-    //     res.send(err);
-    // }
-    // console.log('create account request',req);
-    // res.send('create an account')
+app.post('/account/newUser', async (req, res) => {
+    const collection = db.collection('users');
+    const { email, password, name } = req.body;
+    console.log('reqBOD:', req.body);
+        try{
+            const users = await collection.find({ email: email })
+            .toArray() 
+            console.log('users', users);
+            if (users.length > 0) {
+                res.status(409).send('User already exists')
+            } else {
+                collection.insertOne({ name: name, email: email, password: password });
+                res.status(200).send('Account created');
+            }
+        } catch (err) {
+            res.send(err);
+        };        
 });
 
 app.get('/login/:email/:password', async (req, res) => {
@@ -82,10 +90,26 @@ app.post('/create/list/:email/:listName', async (req, res) =>{
 
 // create task
 app.get('/create/task/:email/:description/:assignedTo', async (req, res) => {
-    let id = uuidv4();
-    console.log(req.params, id)
-    res.send(`create new task ${id}`);
+    try{
+        let id = uuidv4();
+        console.log(req.params, id)
+        res.send(`create new task ${id}`);
+    } catch (err) {
+        res.send(err)
+    }
+
 });
+
+app.delete('/delete/task/:email/:id', async (req, res) => {
+    try{
+        console.log(req.params);
+        res.send('request to delete task')
+    } catch (err) {
+        res.send(err)
+    }
+
+
+})
 
 
 
