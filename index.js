@@ -48,7 +48,7 @@ app.post('/account/newUser', async (req, res) => {
             if (users.length > 0) {
                 res.status(409).send('User already exists')
             } else {
-                collection.insertOne({ name: name, email: email, password: password });
+                collection.insertOne({ name: name, email: email, password: password, lists: [] });
                 res.status(200).send('Account created');
             }
         } catch (err) {
@@ -83,18 +83,44 @@ app.post('/login', async (req, res) => {
 
 // create list
 // each list should have an id, name and users
-app.post('/create/list', async (req, res) =>{
+app.post('/create/list/name', async (req, res) =>{
     const collection = db.collection('users');
-    const { email, listName } = req.body
+    const { email, listName} = req.body;
+    console.log(email, listName);
+    let listId = `${listName}${Math.floor(Math.random()*10000)}`
     try{
-        console.log(req.params);    
-        res.status(200).send("create new list");
-
+        collection.findOneAndUpdate(
+            {email: email},
+            {$push: {
+                lists:
+                    { 'listId' : listId,
+                      'listName' : listName,
+                      'helpers' : [],
+                      'todos': []
+                    }
+            }}
+        )    
+        res.status(200).send("Success! New list created!");
     } catch (err) { 
         res.send(err)
     }
-    // console.log('create new list', req.params);
+});
 
+// I think that adding the helpers will need to be done separately
+app.post('/create/list/addHelpers', async (req, res) =>{
+    const collection = db.collection('users');
+    const { email, listName, helper} = req.body;
+    console.log(email, listName, helper);
+    try{
+        collection.findOneAndUpdate(
+            {email: email, 'lists.listName': listName},
+            {$addToSet: { 'lists.$.helpers': helper }} // addToSet will prevent duplicates
+        )    
+        res.status(200).send();
+        // .send("Helper Added!");
+    } catch (err) { 
+        res.send(err)
+    }
 });
 
 // create task
