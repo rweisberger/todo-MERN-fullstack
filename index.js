@@ -116,34 +116,73 @@ app.post('/create/list/addHelpers', async (req, res) =>{
             {email: email, 'lists.listName': listName},
             {$addToSet: { 'lists.$.helpers': helper }} // addToSet will prevent duplicates
         )    
-        res.status(200).send();
-        // .send("Helper Added!");
+        res.status(200).send('Request sent');
     } catch (err) { 
         res.send(err)
     }
 });
 
 // create task
-app.get('/create/task/:email/:description/:assignedTo', async (req, res) => {
+app.post('/create/task', async (req, res) => {
+    const collection = db.collection('users');
+    const { email, listName, description, assignedTo } = req.body;
+    let id = uuidv4();
     try{
-        let id = uuidv4();
-        console.log(req.params, id)
-        res.send(`create new task ${id}`);
+        console.log(listName, id, description, assignedTo)
+        collection.findOneAndUpdate(
+            {email: email, 'lists.listName': listName},
+            {$push: { 'lists.$.todos': {
+                                        "taskId": id,
+                                        "description": description,
+                                        "assignedTo": assignedTo
+            } }} // addToSet will prevent duplicates
+        )   
+        res.send("Request sent");
     } catch (err) {
         res.send(err)
     }
 
 });
 
-app.delete('/delete/task/:email/:id', async (req, res) => {
+//  db.searchArrayDemo.find({EmployeeDetails:{$elemMatch:{EmployeePerformanceArea : "C++", Year : 1998}}}).pretty();
+
+app.post('/delete/task', async (req, res) => {
+    const collection = db.collection('users');
+    const { taskId, email, listName } = req.body;
+    console.log(taskId, 'id from request body');
     try{
-        console.log(req.params);
-        res.send('request to delete task')
+        const items = await collection.find({'lists.todos.taskId': taskId})
+        .toArray() 
+        const item = items[0];
+        console.log(item)
+        const { lists } = item;
+        console.log('lists', JSON.stringify(lists));
+        lists.forEach(list => {
+            let filtered = (list.todos.filter(todo=> todo.taskId !== taskId));
+            list.todos = filtered;
+             
+        })
+        console.log('item',JSON.stringify(item))
+        collection.replaceOne(
+            {_id : item._id},
+            item
+        )
+        // collection.findOneAndUpdate(
+        //         {email: email},
+        //         {$set: { 'lists' : lists}} 
+        //     )  
+        // hard to traverse doubly nested objects and pull element. Referred to :
+        // https://dev.to/mfahlandt/remove-and-modify-documents-in-nested-array-in-mongodb-nm1
+        // collection.findOneAndUpdate( 
+        //     {'lists.todos.taskId': taskId},
+        //     // {},
+        //     {$pull: { 'lists.$[].todos.$[b]': id }},
+        //     {arrayFilters : [{"b.taskId":id}]}
+        // );
+        res.send('request to delete task');
     } catch (err) {
         res.send(err)
     }
-
-
 })
 
 
