@@ -135,9 +135,11 @@ app.post('/create/task', async (req, res) => {
                                         "taskId": id,
                                         "description": description,
                                         "assignedTo": assignedTo
-            }, returnNewDocument: true }} // addToSet will prevent duplicates
+                                       } 
+            } }, 
+            {returnDocument: 'after'} 
         );   
-        console.log('updated', updated);
+        console.log('updated', updated.value.lists);
         res.send({docs: updated.value, message:"Request sent"});
     } catch (err) {
         res.send(err)
