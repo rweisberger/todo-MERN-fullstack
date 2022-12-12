@@ -44,7 +44,7 @@ app.post('/account/newUser', async (req, res) => {
         try{
             const users = await collection.find({ email: email })
                                           .toArray() 
-            console.log('users', users);
+            // console.log('users', users);
             if (users.length > 0) {
                 res.status(409).send('User already exists')
             } else {
@@ -71,8 +71,8 @@ app.post('/login', async (req, res) => {
                                     .toArray() 
         if (users.length > 0) {
              console.log(users)
-             const [{ name }] = users;
-             res.send(`Found user: ${name}`);
+             const [{ name, email, lists}] = users;
+             res.json({name, email, lists}).status(200);
             } else {
              res.status(404).send("Not found");
         };
@@ -148,7 +148,9 @@ app.post('/create/task', async (req, res) => {
 
 app.post('/delete/task', async (req, res) => {
     const collection = db.collection('users');
-    const { taskId, email, listName } = req.body;
+    // const { taskId, email, listName } = req.body;
+    // only using taskID while working with one list
+    const { taskId } = req.body;
     console.log(taskId, 'id from request body');
     try{
         const items = await collection.find({'lists.todos.taskId': taskId})
@@ -159,10 +161,9 @@ app.post('/delete/task', async (req, res) => {
         console.log('lists', JSON.stringify(lists));
         lists.forEach(list => {
             let filtered = (list.todos.filter(todo=> todo.taskId !== taskId));
-            list.todos = filtered;
-             
+            list.todos = filtered;     
         })
-        console.log('item',JSON.stringify(item))
+        // console.log('item',JSON.stringify(item))
         collection.replaceOne(
             {_id : item._id},
             item
@@ -179,7 +180,8 @@ app.post('/delete/task', async (req, res) => {
         //     {$pull: { 'lists.$[].todos.$[b]': id }},
         //     {arrayFilters : [{"b.taskId":id}]}
         // );
-        res.send('request to delete task');
+        console.log('after replace', lists);
+        res.json(lists).status(200);
     } catch (err) {
         res.send(err)
     }
