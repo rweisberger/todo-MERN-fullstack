@@ -129,15 +129,16 @@ app.post('/create/task', async (req, res) => {
     let id = uuidv4();
     try{
         console.log(listName, id, description, assignedTo)
-        collection.findOneAndUpdate(
+        const updated = await collection.findOneAndUpdate(
             {email: email, 'lists.listName': listName},
             {$push: { 'lists.$.todos': {
                                         "taskId": id,
                                         "description": description,
                                         "assignedTo": assignedTo
-            } }} // addToSet will prevent duplicates
-        )   
-        res.send("Request sent");
+            }, returnNewDocument: true }} // addToSet will prevent duplicates
+        );   
+        console.log('updated', updated);
+        res.send({docs: updated.value, message:"Request sent"});
     } catch (err) {
         res.send(err)
     }
