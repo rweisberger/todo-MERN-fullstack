@@ -31,10 +31,6 @@ async function main() {
 main()
 //   .then(console.log)
 //   .catch(console.error);
-
-let data={ users: [[{name:'Rachel', email:'rachel@gmail.com', password:'secret'}],
-                 [{name:'Bill', email:'bill@gmail.com', password:'password'}]]
-         };
             
 // create account
 app.post('/account/newUser', async (req, res) => {
@@ -100,7 +96,7 @@ app.post('/create/list/name', async (req, res) =>{
                     }
             }}
         )    
-        res.status(200).send("Success! New list created!");
+        res.status(200).send({docs: listId, message: "Success! New list created!"});
     } catch (err) { 
         res.send(err)
     }
@@ -109,11 +105,11 @@ app.post('/create/list/name', async (req, res) =>{
 // I think that adding the helpers will need to be done separately
 app.post('/create/list/addHelpers', async (req, res) =>{
     const collection = db.collection('users');
-    const { email, listName, helper} = req.body;
-    console.log(email, listName, helper);
+    const { email, listId, helper} = req.body;
+    console.log(email, listId, helper);
     try{
         collection.findOneAndUpdate(
-            {email: email, 'lists.listName': listName},
+            {email: email, 'lists.listId': listId},
             {$addToSet: { 'lists.$.helpers': helper }} // addToSet will prevent duplicates
         )    
         res.status(200).send('Request sent');
@@ -125,12 +121,12 @@ app.post('/create/list/addHelpers', async (req, res) =>{
 // create task
 app.post('/create/task', async (req, res) => {
     const collection = db.collection('users');
-    const { email, listName, description, assignedTo } = req.body;
+    const { email, listId, description, assignedTo } = req.body;
     let id = uuidv4();
     try{
-        console.log(listName, id, description, assignedTo)
+        console.log(listId, id, description, assignedTo)
         const updated = await collection.findOneAndUpdate(
-            {email: email, 'lists.listName': listName},
+            {email: email, 'lists.listId': listId},
             {$push: { 'lists.$.todos': {
                                         "taskId": id,
                                         "description": description,
