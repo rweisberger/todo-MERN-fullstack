@@ -158,40 +158,26 @@ app.post('/create/task', async (req, res) => {
 
 //  db.searchArrayDemo.find({EmployeeDetails:{$elemMatch:{EmployeePerformanceArea : "C++", Year : 1998}}}).pretty();
 
-app.post('/delete/task', async (req, res) => {
+app.delete('/delete/task/:taskId', async (req, res) => {
     const collection = db.collection('users');
     // const { taskId, email, listName } = req.body;
     // only using taskID while working with one list
-    const { taskId } = req.body;
-    console.log(taskId, 'id from request body');
+    console.log(req.params.taskId, 'id from request body');
     try{
-        const items = await collection.find({'lists.todos.taskId': taskId})
+        const items = await collection.find({'lists.todos.taskId': req.params.taskId})
         .toArray() 
         const item = items[0];
         console.log(item)
         const { lists } = item;
         console.log('lists', JSON.stringify(lists));
         lists.forEach(list => {
-            let filtered = (list.todos.filter(todo=> todo.taskId !== taskId));
+            let filtered = (list.todos.filter(todo=> todo.taskId !== req.params.taskId));
             list.todos = filtered;     
         })
-        // console.log('item',JSON.stringify(item))
         collection.replaceOne(
             {_id : item._id},
             item
         )
-        // collection.findOneAndUpdate(
-        //         {email: email},
-        //         {$set: { 'lists' : lists}} 
-        //     )  
-        // hard to traverse doubly nested objects and pull element. Referred to :
-        // https://dev.to/mfahlandt/remove-and-modify-documents-in-nested-array-in-mongodb-nm1
-        // collection.findOneAndUpdate( 
-        //     {'lists.todos.taskId': taskId},
-        //     // {},
-        //     {$pull: { 'lists.$[].todos.$[b]': id }},
-        //     {arrayFilters : [{"b.taskId":id}]}
-        // );
         console.log('after replace', lists);
         res.json(lists).status(200);
     } catch (err) {
@@ -205,7 +191,6 @@ app.delete('/delete/list/:email/:listId', async (req, res) => {
     const collection = db.collection('users');
     const query = {
         email: req.params.email,
-        'lists.listId': req.params.listId
     }
     try{
         collection.deleteOne(query);
