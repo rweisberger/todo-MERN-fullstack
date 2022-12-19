@@ -199,7 +199,7 @@ app.post('/delete/task', async (req, res) => {
     }
 })
 
-// delete list
+// delete account
 app.delete('/delete/list/:email/:listId', async (req, res) => {
     console.log("request", req.params)
     const collection = db.collection('users');
