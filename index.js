@@ -31,7 +31,7 @@ async function main() {
 main()
 //   .then(console.log)
 //   .catch(console.error);
-            
+
 // create account
 app.post('/account/newUser', async (req, res) => {
     const collection = db.collection('users');
@@ -117,6 +117,19 @@ app.post('/create/list/addHelpers', async (req, res) =>{
         res.send(err)
     }
 });
+            
+// get all lists
+app.get('/lists/:email', async (req, res) => {
+    const collection = db.collection('users');
+    console.log(req.params)
+    try{
+        let response = await collection.findOne({ email: req.params.email });
+        console.log(response.lists)
+        res.status(200).send(response.lists);
+    } catch (err) {
+        res.send(err)
+    }
+})
 
 // create task
 app.post('/create/task', async (req, res) => {
@@ -181,6 +194,22 @@ app.post('/delete/task', async (req, res) => {
         // );
         console.log('after replace', lists);
         res.json(lists).status(200);
+    } catch (err) {
+        res.send(err)
+    }
+})
+
+// delete list
+app.delete('/delete/list/:email/:listId', async (req, res) => {
+    console.log("request", req.params)
+    const collection = db.collection('users');
+    const query = {
+        email: req.params.email,
+        'lists.listId': req.params.listId
+    }
+    try{
+        collection.deleteOne(query);
+        res.status(202)
     } catch (err) {
         res.send(err)
     }
