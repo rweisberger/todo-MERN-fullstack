@@ -166,8 +166,9 @@ app.delete('/delete/task/:taskId', async (req, res) => {
     try{
         const items = await collection.find({'lists.todos.taskId': req.params.taskId})
         .toArray() 
+        // console.log("items", items);
         const item = items[0];
-        console.log(item)
+        console.log('item', item)
         const { lists } = item;
         console.log('lists', JSON.stringify(lists));
         lists.forEach(list => {
@@ -184,9 +185,48 @@ app.delete('/delete/task/:taskId', async (req, res) => {
         res.send(err)
     }
 })
+app.delete('/delete/list/:email/:listId', async (req,res) => {
+    const collection = db.collection('users');
+    const { email, listId } = req.params;
+    try{
+        // console.log(email, listId )
+        const items = await collection.find({email : email}).toArray();
+        const item = items[0];
+        const { lists } = item;
+        // console.log('lists', lists)
+        let filteredLists = lists.filter(list=> list.listId !== listId)
+        item.lists = filteredLists;
+        console.log(filteredLists, item.lists);
+        collection.replaceOne(
+            {email : email},
+            item
+        )
+
+            
+        
+        // );
+        // const items = await collection.find({'lists.listId': req.params.listId})
+        // .toArray();
+        // console.log(items);
+        // const item = items[0];
+        // // const { lists } = item;
+        // let filtered = lists.filter(list => list.listId !== req.params.listId);
+        // item.lists = filtered;  
+        // collection.replaceOne(
+        //     {_id : item._id},
+        //     item
+        // )
+        // console.log('after replace', lists);
+        console.log('cursor', items);
+        res.send({docs:items, message:"Request sent"});
+    } catch(err) {
+        res.send(err)
+    }
+
+})
 
 // delete account
-app.delete('/delete/list/:email/:listId', async (req, res) => {
+app.delete('/delete/account/:email/', async (req, res) => {
     console.log("request", req.params)
     const collection = db.collection('users');
     const query = {
