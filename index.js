@@ -201,22 +201,6 @@ app.delete('/delete/list/:email/:listId', async (req,res) => {
             {email : email},
             item
         )
-
-            
-        
-        // );
-        // const items = await collection.find({'lists.listId': req.params.listId})
-        // .toArray();
-        // console.log(items);
-        // const item = items[0];
-        // // const { lists } = item;
-        // let filtered = lists.filter(list => list.listId !== req.params.listId);
-        // item.lists = filtered;  
-        // collection.replaceOne(
-        //     {_id : item._id},
-        //     item
-        // )
-        // console.log('after replace', lists);
         console.log('cursor', items);
         res.send({docs:items, message:"Request sent"});
     } catch(err) {
