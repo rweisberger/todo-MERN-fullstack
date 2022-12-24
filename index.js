@@ -153,10 +153,30 @@ app.post('/create/task', async (req, res) => {
     } catch (err) {
         res.send(err)
     }
-
 });
 
-//  db.searchArrayDemo.find({EmployeeDetails:{$elemMatch:{EmployeePerformanceArea : "C++", Year : 1998}}}).pretty();
+// edit task
+app.patch('/task', async (req,res) => {
+    const collection = db.collection('users');
+    const { listId, taskId, description, assignedTo } = req.body;
+    console.log('taskId', taskId,'listId', listId);
+    try{
+        const items = await collection.find({'lists.todos.taskId': taskId}).toArray()
+        const item = items[0];
+        const { lists } = item;
+        let targetList = lists.find(list=> list.listId === listId);
+        let targetTask = targetList.todos.find(task => task.taskId === taskId);
+        targetTask.description = description;
+        targetTask.assignedTo = assignedTo        
+        collection.replaceOne(
+            {_id : item._id},
+            item
+        );
+        res.json(lists).status(200)
+    } catch (err){
+        res.send(err)
+    }
+});
 
 app.delete('/delete/task/:taskId', async (req, res) => {
     const collection = db.collection('users');
@@ -166,6 +186,7 @@ app.delete('/delete/task/:taskId', async (req, res) => {
     try{
         const items = await collection.find({'lists.todos.taskId': req.params.taskId})
         .toArray() 
+        
         // console.log("items", items);
         const item = items[0];
         console.log('item', item)
@@ -185,11 +206,12 @@ app.delete('/delete/task/:taskId', async (req, res) => {
         res.send(err)
     }
 })
+
 app.delete('/delete/list/:email/:listId', async (req,res) => {
     const collection = db.collection('users');
     const { email, listId } = req.params;
     try{
-        // console.log(email, listId )
+        console.log(email, listId )
         const items = await collection.find({email : email}).toArray();
         const item = items[0];
         const { lists } = item;
@@ -206,7 +228,6 @@ app.delete('/delete/list/:email/:listId', async (req,res) => {
     } catch(err) {
         res.send(err)
     }
-
 })
 
 // delete account
