@@ -158,7 +158,7 @@ app.post('/create/task', async (req, res) => {
 // edit task
 app.patch('/task', async (req,res) => {
     const collection = db.collection('users');
-    const { listId, taskId, description, assignedTo } = req.body;
+    const { listId, taskId, editedTask, assignedTo } = req.body;
     console.log('taskId', taskId,'listId', listId);
     try{
         const items = await collection.find({'lists.todos.taskId': taskId}).toArray()
@@ -166,7 +166,7 @@ app.patch('/task', async (req,res) => {
         const { lists } = item;
         let targetList = lists.find(list=> list.listId === listId);
         let targetTask = targetList.todos.find(task => task.taskId === taskId);
-        targetTask.description = description;
+        targetTask.description = editedTask;
         targetTask.assignedTo = assignedTo        
         collection.replaceOne(
             {_id : item._id},
@@ -180,8 +180,6 @@ app.patch('/task', async (req,res) => {
 
 app.delete('/delete/task/:taskId', async (req, res) => {
     const collection = db.collection('users');
-    // const { taskId, email, listName } = req.body;
-    // only using taskID while working with one list
     console.log(req.params.taskId, 'id from request body');
     try{
         const items = await collection.find({'lists.todos.taskId': req.params.taskId})
