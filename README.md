@@ -23,7 +23,7 @@
 ## Roadmap for Improvements
 <p>As with any project there are is always room for boundless growth and improvement. Here, I will limit my list of goals to three and explain why I find them most interesting or important.</p>
 <ol>
-  <li><b>Implement React Redux<b>: There are several componenets that need to share state in order for the lists to be update correctly in the ui. Instead of "prop drilling" and passing the props through multiple componenet levels, I chose to move a couple of state variables into the Context. This was not my orgninal intention for using the Context. I think that moving the state variables into Redux would make the app more efficient and reduce unnecessary rerenders.</li>
+  <li><b>Implement React Redux</b>: There are several componenets that need to share state in order for the lists to be update correctly in the ui. Instead of "prop drilling" and passing the props through multiple componenet levels, I chose to move a couple of state variables into the Context. This was not my orgninal intention for using the Context. I think that moving the state variables into Redux would make the app more efficient and reduce unnecessary rerenders.</li>
   <li></li>
 </ol>
   
