@@ -9,8 +9,8 @@
 <p> The files in this repository are an Express Application. Express is setup to serve static files through the public directory. The public directory contains a build of the front end React Application. You can find the React front end project here: <a href="https://github.com/rweisberger/family-todo-list">React Front End Repo</a>. A cluster through MongoDB atlas is used as the database. On the front end, Axios is being used to communicate with RESTful API. </p>
 
 ### Machine Setup
-<ul>Node Version 16+</ul>
-<ul>npm</ul>
+<ol>Node Version 16+</ol>
+<ol>npm</ol>
 
 ## Run Project on Locally
 
