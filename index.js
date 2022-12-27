@@ -7,13 +7,11 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const MongoClient = require('mongodb').MongoClient;
 
-
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use(express.static('public'));
-
+// app.use(express.static('public'));
 
 const port = process.env.PORT || 4000;
 
