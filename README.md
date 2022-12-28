@@ -14,7 +14,7 @@
   <li>npm</li>
 </ul>
 
-## Run Project on Locally
+## Run Project Locally
 
 <p> Clone this repo and pull it down to your machine. Open your terminal and navigate to the project directory. Run <npm install> to install all of the dependencies. After completed you can start the local server with <npm start> or <nodemon start> and it will open on port 4000.
   
