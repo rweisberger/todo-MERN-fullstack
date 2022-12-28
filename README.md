@@ -25,7 +25,7 @@
 <ol>
   <li><b>Implement React Redux</b>: There are several componenets that need to share state in order for the lists to be update correctly in the ui. Instead of "prop drilling" and passing the props through multiple componenet levels, I chose to move a couple of state variables into the Context. This was not my orgninal intention for using the Context. I think that moving the state variables into Redux would make the app more efficient and reduce unnecessary rerenders.</li>
   <li><b>Improve Authentication</b>: I would live to imporove the route protection component and use a JSON Web Token to practice with better, and more secure logins.</li>
-  <li><b>Improve Route Naming</b></li>: I belive that the routes could be made more consistent in their naming. A post, patch, and delete toute would be made to '/task'. 
+  <li><b>Improve Route Naming</b>: I belive that the routes could be made more consistent in their naming. A post, patch, and delete toute would be made to '/task'.</li>
 </ol>
   
 ## Contact
