@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require("cors")
 const bodyParser= require('body-parser');
-
+require('dotenv').config();
+console.log("password", process.env.MONGO_PASSWORD);
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
@@ -14,9 +15,10 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 const port = process.env.PORT || 4000;
-
+const user = process.env.MONGO_USER;
+const password = process.env.MONGO_PASSWORD;
 const url =
-'mongodb+srv://DBMainUser:hPu7sp3hGSCxkjEP@cluster0.pprbo47.mongodb.net/?retryWrites=true&w=majority';
+`mongodb+srv://${user}:${password}@cluster0.pprbo47.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(url);
 const dbName = "todo_project";
 let db;
