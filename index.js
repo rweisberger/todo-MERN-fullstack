@@ -1,8 +1,8 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require("cors")
 const bodyParser= require('body-parser');
-require('dotenv').config();
-console.log("password", process.env.MONGO_PASSWORD);
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
@@ -32,8 +32,8 @@ async function main() {
 }
 
 main()
-//   .then(console.log)
-//   .catch(console.error);
+  .then(console.log)
+  .catch(console.error);
 
 // create account
 app.post('/account/newUser', async (req, res) => {
