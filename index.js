@@ -32,7 +32,7 @@ async function main() {
 }
 
 main()
-  .then(console.log)
+  .then(console.log("connected!"))
   .catch(console.error);
 
 // create account
