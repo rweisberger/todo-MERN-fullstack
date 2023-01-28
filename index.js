@@ -121,7 +121,7 @@ app.post('/create/list/addHelpers', async (req, res) => {
     }
 });
 // edit list name
-app.patch('/edit/list/name', async (req,res) => {
+app.patch('/list/name', async (req,res) => {
     const collection = db.collection('users');
     const { email, listId, listName, } = req.body;
     console.log("making request", req.body);
@@ -141,7 +141,7 @@ app.patch('/edit/list/name', async (req,res) => {
 });
 
 // edit helper (edit name and delete need to be options)
-app.patch('/edit/list/helper', async (req,res) => {
+app.patch('/list/helper', async (req,res) => {
     const collection = db.collection('users');
     const { email, listId, helper,newHelper } = req.body;
     console.log("making request", req.body);
@@ -150,6 +150,25 @@ app.patch('/edit/list/helper', async (req,res) => {
         let targetList = entry.lists.find(list => list.listId === listId)
         let index = targetList.helpers.indexOf(helper)
         targetList.helpers[index] = newHelper;
+        collection.replaceOne(
+            {_id : entry._id},
+            entry
+        )
+        res.status(200).send('Request sent');
+    } catch (err) { 
+        res.status(404).send(err);
+    }
+});
+
+app.delete('/list/helper', async (req,res) => {
+    const collection = db.collection('users');
+    const { email, listId, removedHelper } = req.body;
+    console.log("making request", req.body);
+    try{        
+        let entry = await collection.findOne({email:email,'lists.listId': listId} )       
+        let targetList = entry.lists.find(list => list.listId === listId)
+        let index = targetList.helpers.indexOf(removedHelper)
+        targetList.helpers.splice(index, 1)
         collection.replaceOne(
             {_id : entry._id},
             entry
