@@ -12,7 +12,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use(express.static('public'));
+// app.use(express.static('public'));
 
 const port = process.env.PORT || 4000;
 const user = process.env.MONGO_USER;
@@ -106,7 +106,7 @@ app.post('/create/list/name', async (req, res) =>{
 });
 
 // I think that adding the helpers will need to be done separately
-app.post('/create/list/addHelpers', async (req, res) =>{
+app.post('/create/list/addHelpers', async (req, res) => {
     const collection = db.collection('users');
     const { email, listId, helper} = req.body;
     console.log(email, listId, helper);
@@ -118,6 +118,45 @@ app.post('/create/list/addHelpers', async (req, res) =>{
         res.status(200).send('Request sent');
     } catch (err) { 
         res.send(err)
+    }
+});
+// edit list name
+app.patch('/edit/list/name', async (req,res) => {
+    const collection = db.collection('users');
+    const { email, listId, listName, } = req.body;
+    console.log("making request", req.body);
+    try{        
+        let entry = await collection.findOne({email:email,'lists.listId': listId} )       
+        let targetList = entry.lists.find(list => list.listId === listId)
+        targetList.listName = listName;
+        console.log("in try", targetList);
+        collection.replaceOne(
+            {_id : entry._id},
+            entry
+        )
+        res.status(200).send('Request sent');
+    } catch (err) { 
+        res.status(404).send(err);
+    }
+});
+
+// edit helper (edit name and delete need to be options)
+app.patch('/edit/list/helper', async (req,res) => {
+    const collection = db.collection('users');
+    const { email, listId, helper,newHelper } = req.body;
+    console.log("making request", req.body);
+    try{        
+        let entry = await collection.findOne({email:email,'lists.listId': listId} )       
+        let targetList = entry.lists.find(list => list.listId === listId)
+        let index = targetList.helpers.indexOf(helper)
+        targetList.helpers[index] = newHelper;
+        collection.replaceOne(
+            {_id : entry._id},
+            entry
+        )
+        res.status(200).send('Request sent');
+    } catch (err) { 
+        res.status(404).send(err);
     }
 });
             
